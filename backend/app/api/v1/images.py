@@ -8,7 +8,7 @@ from app.models.user import User
 from app.models.medical import MedicalImage, ImageType, AnalysisStatus
 from app.schemas.medical import MedicalImageResponse, MedicalImageCreate
 from app.api.v1.auth import get_current_user
-from app.services.minio_service import minio_service
+from app.services.cloudinary_service import cloudinary_service
 
 router = APIRouter()
 
@@ -64,15 +64,16 @@ async def upload_medical_image(
     unique_filename = f"{uuid.uuid4()}{file_ext}"
     object_name = f"medical_images/{current_user.id}/{unique_filename}"
     
-    # Upload to MinIO
+    # Upload to Cloudinary
     try:
         import io
-        file_path = minio_service.upload_file(
+        file_url = cloudinary_service.upload_file(
             io.BytesIO(file_content),
             object_name,
             file.content_type,
             file_size
         )
+        file_path = object_name  # Store object name for later retrieval
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -149,9 +150,8 @@ async def download_medical_image(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Image not found")
     
     try:
-        # Extract object name from file_path
-        object_name = image.file_path.split('/', 1)[1]
-        url = minio_service.get_file_url(object_name)
+        # Get URL from Cloudinary
+        url = cloudinary_service.get_file_url(image.file_path)
         return {"download_url": url, "expires_in": 3600}
     except Exception as e:
         raise HTTPException(
@@ -193,12 +193,11 @@ async def delete_medical_image(
         db.commit()
         print(f"✅ Deleted image {image_id} from database")
         
-        # Try to delete from MinIO (after DB success, non-blocking)
+        # Try to delete from Cloudinary (after DB success, non-blocking)
         try:
-            if image.file_path and '/' in image.file_path:
-                object_name = image.file_path.split('/', 1)[1]
-                minio_service.delete_file(object_name)
-                print(f"✅ Deleted file from MinIO: {object_name}")
+            if image.file_path:
+                cloudinary_service.delete_file(image.file_path)
+                print(f"✅ Deleted file from Cloudinary: {image.file_path}")
         except Exception as e:
             print(f"⚠️ Warning: Failed to delete file from MinIO: {e}")
             
