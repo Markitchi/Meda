@@ -1,3 +1,5 @@
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+
 export const api = {
     // Auth
     async register(data: { email: string; password: string; full_name: string; role: string }) {
