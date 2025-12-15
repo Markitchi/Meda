@@ -3,7 +3,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/a
 export const api = {
     // Auth
     async register(data: { email: string; password: string; full_name: string; role: string }) {
-        const response = await fetch(${API_BASE_URL}/auth/register, {
+        const response = await fetch(`${API_BASE_URL}/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
@@ -16,7 +16,7 @@ export const api = {
     },
 
     async login(email: string, password: string) {
-        const response = await fetch(${API_BASE_URL}/auth/login, {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password }),
@@ -29,7 +29,7 @@ export const api = {
     },
 
     async getCurrentUser(token: string) {
-        const response = await fetch(${API_BASE_URL}/auth/me, {
+        const response = await fetch(`${API_BASE_URL}/auth/me`, {
             headers: { 'Authorization': `Bearer ${token}` },
         });
         if (!response.ok) throw new Error('Failed to get user');
@@ -38,7 +38,7 @@ export const api = {
 
     // Patients
     async getPatients(token: string, search?: string) {
-        const url = new URL(${API_BASE_URL}/patients/);
+        const url = new URL(`${API_BASE_URL}/patients/`);
         if (search) url.searchParams.set('search', search);
 
         const response = await fetch(url.toString(), {
@@ -49,7 +49,7 @@ export const api = {
     },
 
     async getPatient(token: string, id: number) {
-        const response = await fetch(${API_BASE_URL}/patients/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/patients/${id}`, {
             headers: { 'Authorization': `Bearer ${token}` },
         });
         if (!response.ok) throw new Error('Failed to fetch patient');
@@ -57,7 +57,7 @@ export const api = {
     },
 
     async createPatient(token: string, data: any) {
-        const response = await fetch(${API_BASE_URL}/patients/, {
+        const response = await fetch(`${API_BASE_URL}/patients/`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -73,7 +73,7 @@ export const api = {
     },
 
     async updatePatient(token: string, id: number, data: any) {
-        const response = await fetch(${API_BASE_URL}/patients/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/patients/${id}`, {
             method: 'PATCH',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -86,7 +86,7 @@ export const api = {
     },
 
     async deletePatient(token: string, id: number) {
-        const response = await fetch(${API_BASE_URL}/patients/${id}`, {
+        const response = await fetch(`${API_BASE_URL}/patients/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': `Bearer ${token}` },
         });
@@ -94,7 +94,7 @@ export const api = {
     },
 
     async getPatientImages(token: string, patientId: number) {
-        const response = await fetch(${API_BASE_URL}/patients/${patientId}/images`, {
+        const response = await fetch(`${API_BASE_URL}/patients/${patientId}/images`, {
             headers: { 'Authorization': `Bearer ${token}` },
         });
         if (!response.ok) throw new Error('Failed to fetch patient images');
