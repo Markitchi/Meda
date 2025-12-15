@@ -1,0 +1,44 @@
+/* Extra rounded styles for all UI elements */
+
+/* Global rounding for inputs, selects, textareas */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+    border-radius: 1rem !important;
+    /* rounded-2xl */
+}
+
+/* Global rounding for buttons */
+button,
+a.btn,
+[role="button"] {
+    border-radius: 1rem !important;
+    /* rounded-2xl */
+}
+
+/* Extra rounded cards and containers */
+.card,
+[class*="card"],
+[class*="Card"] {
+    border-radius: 1.5rem !important;
+    /* rounded-3xl */
+}
+
+/* Make stat cards and action buttons extra rounded */
+.stat-card,
+.action-button,
+.quick-link {
+    border-radius: 1.5rem !important;
+}
+
+/* Rounded images */
+img {
+    border-radius: 1rem;
+}
+
+/* Rounded modals and dialogs */
+dialog,
+[role="dialog"],
+.modal {
+    border-radius: 1.5rem !important;
+}

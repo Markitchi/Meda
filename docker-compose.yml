@@ -1,0 +1,106 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: meda-postgres
+    environment:
+      POSTGRES_USER: meda_user
+      POSTGRES_PASSWORD: meda_password_2024
+      POSTGRES_DB: meda_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U meda_user -d meda_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - meda-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: meda-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - meda-network
+
+  # MinIO Object Storage (S3-compatible)
+  minio:
+    image: minio/minio:latest
+    container_name: meda-minio
+    environment:
+      MINIO_ROOT_USER: meda_minio
+      MINIO_ROOT_PASSWORD: meda_minio_password_2024
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - meda-network
+
+  # Backend FastAPI (will be added later)
+  # backend:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: ../docker/Dockerfile.backend
+  #   container_name: meda-backend
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     DATABASE_URL: postgresql://meda_user:meda_password_2024@postgres:5432/meda_db
+  #     REDIS_URL: redis://redis:6379
+  #     MINIO_ENDPOINT: minio:9000
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #     minio:
+  #       condition: service_healthy
+  #   networks:
+  #     - meda-network
+
+  # Frontend Next.js (will be added later)
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: ../docker/Dockerfile.frontend
+  #   container_name: meda-frontend
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     NEXT_PUBLIC_API_URL: http://localhost:8000
+  #   depends_on:
+  #     - backend
+  #   networks:
+  #     - meda-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+
+networks:
+  meda-network:
+    driver: bridge
