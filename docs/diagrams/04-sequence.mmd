@@ -1,0 +1,24 @@
+sequenceDiagram
+    actor M as Médecin
+    participant F as Frontend
+    participant API as Backend API
+    participant DB as Database
+    participant AI as Gemini AI
+
+    M->>F: Créer consultation
+    F->>API: POST /consultations
+    API->>DB: Sauvegarder
+    DB-->>API: OK
+
+    M->>F: Demander diagnostic IA
+    F->>API: POST /diagnosis/comprehensive
+    API->>AI: Envoyer données patient
+    AI-->>API: Analyse complète
+    API->>DB: Sauvegarder diagnostic
+    API-->>F: Résultat diagnostic
+    F-->>M: Afficher diagnostic
+
+    M->>F: Générer PDF
+    F->>API: GET /reports/consultation/{id}/pdf
+    API-->>F: PDF Stream
+    F-->>M: Télécharger PDF

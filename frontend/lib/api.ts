@@ -98,4 +98,43 @@ export const api = {
         if (!response.ok) throw new Error('Failed to fetch patient images');
         return response.json();
     },
+
+    // Users list for collaboration
+    async get(endpoint: string) {
+        const token = localStorage.getItem('access_token');
+        const response = await fetch(`http://localhost:8000/api/v1${endpoint}`, {
+            headers: { 'Authorization': `Bearer ${token}` },
+        });
+        if (!response.ok) throw new Error('Request failed');
+        return response.json();
+    },
 };
+
+// Generic API request helper for collaboration module
+export async function apiRequest(endpoint: string, options: RequestInit = {}) {
+    const token = localStorage.getItem('access_token');
+
+    const defaultHeaders: HeadersInit = {
+        'Content-Type': 'application/json',
+    };
+
+    if (token) {
+        defaultHeaders['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`http://localhost:8000/api/v1${endpoint}`, {
+        ...options,
+        headers: {
+            ...defaultHeaders,
+            ...options.headers,
+        },
+    });
+
+    if (!response.ok) {
+        const error = await response.json().catch(() => ({ detail: 'Request failed' }));
+        throw new Error(error.detail || `Request failed with status ${response.status}`);
+    }
+
+    return response.json();
+}
+

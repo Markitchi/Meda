@@ -1,0 +1,21 @@
+graph TB
+    subgraph "Client"
+        Browser[🌐 Navigateur]
+    end
+
+    subgraph "Serveur"
+        Next[Next.js :3000]
+        FastAPI[FastAPI :8000]
+        SQLite[(SQLite DB)]
+        MinIO[MinIO :9000]
+    end
+
+    subgraph "Cloud"
+        Gemini[Google Gemini API]
+    end
+
+    Browser --> Next
+    Next --> FastAPI
+    FastAPI --> SQLite
+    FastAPI --> MinIO
+    FastAPI --> Gemini

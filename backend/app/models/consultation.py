@@ -32,6 +32,9 @@ class Consultation(Base):
     # Relationships
     patient = relationship("Patient", back_populates="consultations")
     doctor = relationship("User")
+    shares = relationship("ConsultationShare", back_populates="consultation", cascade="all, delete-orphan")
+    comments = relationship("Comment", back_populates="consultation", cascade="all, delete-orphan")
+
 
 
 class MedicalHistory(Base):

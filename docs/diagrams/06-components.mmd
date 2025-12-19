@@ -1,0 +1,30 @@
+graph TB
+    subgraph "Frontend - Next.js 14"
+        UI[React Components]
+        Pages[App Router]
+        API_Client[API Clients]
+    end
+
+    subgraph "Backend - FastAPI"
+        Router[API Routers]
+        Services[Services Layer]
+        Models[SQLAlchemy Models]
+    end
+
+    subgraph "External"
+        Gemini[Google Gemini AI]
+        MinIO[MinIO Storage]
+    end
+
+    subgraph "Database"
+        SQLite[(SQLite)]
+    end
+
+    UI --> Pages
+    Pages --> API_Client
+    API_Client -->|REST API| Router
+    Router --> Services
+    Services --> Models
+    Models --> SQLite
+    Services --> Gemini
+    Services --> MinIO

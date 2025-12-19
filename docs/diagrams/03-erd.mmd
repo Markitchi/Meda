@@ -1,0 +1,55 @@
+erDiagram
+    USERS ||--o{ PATIENTS : creates
+    USERS ||--o{ CONSULTATIONS : performs
+    USERS ||--o{ MEDICAL_IMAGES : uploads
+    USERS ||--o{ NOTIFICATIONS : receives
+    USERS ||--o{ COMMENTS : writes
+    USERS ||--o{ CONSULTATION_SHARES : shares
+
+    PATIENTS ||--o{ CONSULTATIONS : has
+    PATIENTS ||--o{ MEDICAL_IMAGES : has
+
+    CONSULTATIONS ||--o{ CONSULTATION_SHARES : shared_via
+    CONSULTATIONS ||--o{ COMMENTS : has
+
+    MEDICAL_IMAGES ||--o{ ANALYSES : has
+
+    USERS {
+        int id PK
+        string email UK
+        string hashed_password
+        string full_name
+        enum role
+    }
+
+    PATIENTS {
+        int id PK
+        string first_name
+        string last_name
+        date date_of_birth
+        int created_by FK
+    }
+
+    CONSULTATIONS {
+        int id PK
+        int patient_id FK
+        int doctor_id FK
+        string chief_complaint
+        text diagnosis
+        text treatment_plan
+    }
+
+    MEDICAL_IMAGES {
+        int id PK
+        string filename
+        enum image_type
+        enum analysis_status
+        int patient_id FK
+    }
+
+    CONSULTATION_SHARES {
+        int id PK
+        int consultation_id FK
+        int shared_with_user_id FK
+        enum permission
+    }

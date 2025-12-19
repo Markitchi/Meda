@@ -1,0 +1,25 @@
+flowchart TD
+    A[Début] --> B[Sélectionner Patient]
+    B --> C[Créer Consultation]
+    C --> D[Saisir Symptômes]
+    D --> E[Saisir Signes Vitaux]
+    
+    E --> F{Image médicale?}
+    F -->|Oui| G[Upload Image]
+    G --> H[Analyse IA Image]
+    H --> I[Demander Diagnostic IA]
+    F -->|Non| I
+    
+    I --> J[Gemini Analyse]
+    J --> K[Afficher Diagnostic]
+    
+    K --> L{Valider?}
+    L -->|Non| M[Modifier]
+    M --> K
+    L -->|Oui| N[Saisir Traitement]
+    
+    N --> O[Sauvegarder]
+    O --> P{PDF?}
+    P -->|Oui| Q[Générer PDF]
+    Q --> R[Fin]
+    P -->|Non| R

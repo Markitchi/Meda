@@ -21,12 +21,12 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# Configure CORS
+# Configure CORS - More permissive for development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=["*"],  # Allow all origins in development
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],  # Explicitly list all methods
+    allow_methods=["*"],  # Allow all methods
     allow_headers=["*"],
     expose_headers=["*"],
 )
@@ -84,6 +84,19 @@ app.include_router(consultations.router, prefix="/api/v1", tags=["Consultations 
 # Import comprehensive diagnosis router
 from app.api.v1.endpoints import diagnosis
 app.include_router(diagnosis.router, prefix="/api/v1/diagnosis", tags=["Comprehensive Diagnosis"])
+
+# Import reports router
+from app.api.v1.endpoints import reports
+app.include_router(reports.router, prefix="/api/v1/reports", tags=["Reports"])
+
+# Import notifications router
+from app.api.v1.endpoints import notifications
+app.include_router(notifications.router, prefix="/api/v1/notifications", tags=["Notifications"])
+
+# Import collaboration router
+from app.api.v1.endpoints import collaboration
+app.include_router(collaboration.router, prefix="/api/v1/collaboration", tags=["Collaboration"])
+
 
 if __name__ == "__main__":
     import uvicorn

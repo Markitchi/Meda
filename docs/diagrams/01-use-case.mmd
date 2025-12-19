@@ -1,0 +1,46 @@
+graph TB
+    subgraph Acteurs
+        M[👨‍⚕️ Médecin]
+        A[👨‍💼 Admin]
+        AI[🤖 IA Gemini]
+    end
+
+    subgraph "Gestion Patients"
+        UC1[Créer/Modifier Patient]
+        UC2[Consulter Dossier]
+    end
+
+    subgraph "Consultations"
+        UC3[Créer Consultation]
+        UC4[Demander Diagnostic IA]
+        UC5[Générer Rapport PDF]
+    end
+
+    subgraph "Images Médicales"
+        UC6[Téléverser Image]
+        UC7[Analyser Image IA]
+        UC8[Visualiser/Annoter]
+    end
+
+    subgraph "Collaboration"
+        UC9[Partager Consultation]
+        UC10[Commenter]
+    end
+
+    M --> UC1
+    M --> UC2
+    M --> UC3
+    M --> UC4
+    M --> UC5
+    M --> UC6
+    M --> UC8
+    M --> UC9
+    M --> UC10
+
+    A --> UC1
+    A --> UC2
+
+    AI --> UC4
+    AI --> UC7
+
+    UC6 --> UC7

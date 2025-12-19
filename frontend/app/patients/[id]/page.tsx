@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { api } from '@/lib/api';
+import { reportsApi } from '@/lib/api-reports';
 
 interface Patient {
     id: number;
@@ -40,6 +41,7 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
     const [images, setImages] = useState<MedicalImage[]>([]);
     const [consultations, setConsultations] = useState<Consultation[]>([]);
     const [loading, setLoading] = useState(true);
+    const [downloadingPDF, setDownloadingPDF] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('access_token');
@@ -85,6 +87,33 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
             age--;
         }
         return age;
+    };
+
+    const handleDownloadPatientPDF = async () => {
+        try {
+            setDownloadingPDF(true);
+            const token = localStorage.getItem('access_token');
+            if (token) {
+                await reportsApi.downloadPatientPDF(token, parseInt(params.id));
+            }
+        } catch (error) {
+            console.error('Failed to download PDF:', error);
+            alert('Échec du téléchargement du rapport PDF');
+        } finally {
+            setDownloadingPDF(false);
+        }
+    };
+
+    const handleDownloadConsultationPDF = async (consultationId: number) => {
+        try {
+            const token = localStorage.getItem('access_token');
+            if (token) {
+                await reportsApi.downloadConsultationPDF(token, consultationId);
+            }
+        } catch (error) {
+            console.error('Failed to download consultation PDF:', error);
+            alert('Échec du téléchargement du rapport de consultation');
+        }
     };
 
     if (loading) {
@@ -215,6 +244,15 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
                                 >
                                     Ajouter Image
                                 </motion.a>
+                                <motion.button
+                                    onClick={handleDownloadPatientPDF}
+                                    disabled={downloadingPDF}
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    className="block w-full py-3 px-4 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl font-medium text-center shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {downloadingPDF ? 'Téléchargement...' : '📄 Télécharger Rapport PDF'}
+                                </motion.button>
                             </div>
                         </motion.div>
                     </div>
@@ -235,25 +273,42 @@ export default function PatientDetailPage({ params }: { params: { id: string } }
                             ) : (
                                 <div className="space-y-4">
                                     {consultations.map((consultation) => (
-                                        <motion.div
+                                        <motion.a
                                             key={consultation.id}
+                                            href={`/consultations/${consultation.id}`}
                                             whileHover={{ scale: 1.01 }}
-                                            className="p-4 bg-gray-50 rounded-xl border border-gray-200 hover:border-emerald-300 transition-all"
+                                            className="block p-4 bg-gray-50 rounded-xl border border-gray-200 hover:border-emerald-300 transition-all cursor-pointer"
                                         >
-                                            <p className="font-medium text-gray-900">{consultation.chief_complaint}</p>
-                                            {consultation.diagnosis && (
-                                                <p className="text-sm text-gray-600 mt-1">
-                                                    Diagnostic: {consultation.diagnosis}
-                                                </p>
-                                            )}
-                                            <p className="text-xs text-gray-500 mt-2">
-                                                {new Date(consultation.consultation_date).toLocaleDateString('fr-FR', {
-                                                    year: 'numeric',
-                                                    month: 'long',
-                                                    day: 'numeric'
-                                                })}
-                                            </p>
-                                        </motion.div>
+                                            <div className="flex justify-between items-start">
+                                                <div className="flex-1">
+                                                    <p className="font-medium text-gray-900">{consultation.chief_complaint}</p>
+                                                    {consultation.diagnosis && (
+                                                        <p className="text-sm text-gray-600 mt-1">
+                                                            Diagnostic: {consultation.diagnosis}
+                                                        </p>
+                                                    )}
+                                                    <p className="text-xs text-gray-500 mt-2">
+                                                        {new Date(consultation.consultation_date).toLocaleDateString('fr-FR', {
+                                                            year: 'numeric',
+                                                            month: 'long',
+                                                            day: 'numeric'
+                                                        })}
+                                                    </p>
+                                                </div>
+                                                <motion.button
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        handleDownloadConsultationPDF(consultation.id);
+                                                    }}
+                                                    whileHover={{ scale: 1.1 }}
+                                                    whileTap={{ scale: 0.9 }}
+                                                    className="ml-3 p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors"
+                                                    title="Télécharger PDF"
+                                                >
+                                                    📄
+                                                </motion.button>
+                                            </div>
+                                        </motion.a>
                                     ))}
                                 </div>
                             )}

@@ -1,0 +1,64 @@
+classDiagram
+    class User {
+        +int id
+        +string email
+        +string full_name
+        +UserRole role
+        +bool is_active
+    }
+
+    class Patient {
+        +int id
+        +string first_name
+        +string last_name
+        +date date_of_birth
+        +string gender
+        +string phone
+    }
+
+    class Consultation {
+        +int id
+        +datetime consultation_date
+        +string chief_complaint
+        +json symptoms
+        +json vital_signs
+        +text diagnosis
+        +text treatment_plan
+    }
+
+    class MedicalImage {
+        +int id
+        +string filename
+        +ImageType image_type
+        +AnalysisStatus status
+        +float confidence_score
+    }
+
+    class ConsultationShare {
+        +int id
+        +SharePermission permission
+        +datetime created_at
+    }
+
+    class Comment {
+        +int id
+        +text content
+        +datetime created_at
+    }
+
+    class Notification {
+        +int id
+        +NotificationType type
+        +string title
+        +bool is_read
+    }
+
+    User "1" --> "*" Patient : creates
+    User "1" --> "*" Consultation : performs
+    User "1" --> "*" Notification : receives
+
+    Patient "1" --> "*" Consultation : has
+    Patient "1" --> "*" MedicalImage : has
+
+    Consultation "1" --> "*" ConsultationShare : shared_via
+    Consultation "1" --> "*" Comment : has
